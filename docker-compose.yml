@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:13
+    container_name: odoo-db
+    environment:
+      POSTGRES_DB: odoo
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - web
+  odoo:
+    image: odoo:17.0
+    container_name: odoo-app
+    depends_on:
+      - db
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.odoo.rule=Host(`odoo.odoominhai.xyz`)"
+      - "traefik.http.routers.odoo.entrypoints=websecure"
+      - "traefik.http.routers.odoo.tls.certresolver=myresolver"
+      - "traefik.http.services.odoo.loadbalancer.server.port=8069"
+    networks:
+      - web
+
+volumes:
+  odoo-db-data:
+  odoo-web-data:
+
+networks:
+  web:
+    external: true

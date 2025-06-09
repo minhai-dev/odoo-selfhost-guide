@@ -1,7 +1,5 @@
-*.env
+.env
 *.pem
 *.key
-*.bak
-*.tar.gz
-__pycache__/
-*.pyc
+acme.json
+
